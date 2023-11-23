@@ -6,7 +6,8 @@ from tkcalendar import Calendar
 from datetime import date
 from tkinter import messagebox
 from database import (TipoCuenta, Bancos, Cargo, Departamento, TipoCont, EPS, Fondo_Cesantias, Fondo_Pensiones,
-                      insertar_CuentaB_empleado, insertar_empleado)
+                      insertar_CuentaB_empleado, insertar_empleado, insertar_Cesantias_empleados,
+                      insertar_EPS_empleados,insertar_pensiones_empleados)
 
 
 class Registrar_empleado:
@@ -24,6 +25,9 @@ class Registrar_empleado:
         self.id_tipo_contrato = None
         self.id_cargo = None
         self.id_DPTO = None
+        self.id_cesantias = None
+        self.ID_EPS = None
+        self.id_pensiones = None
 
         panel_principal1 = tk.Frame(panel_principal, height=50, bd=0, relief=tk.SOLID, bg=COLOR_CUERPO_PRINCIPAL)
         panel_principal1.pack()
@@ -183,7 +187,7 @@ class Registrar_empleado:
         def obtener_id_eps(event):
             eps_seleccionado = self.EPS.get()
             if eps_seleccionado in ids_eps:
-                id_eps = ids_eps[eps_seleccionado]
+                self.ID_EPS = ids_eps[eps_seleccionado]
 
         self.EPS.bind("<<ComboboxSelected>>", obtener_id_eps)
 
@@ -200,7 +204,7 @@ class Registrar_empleado:
         def obtener_id_cesantias(event):
             cesantias_seleccionado = self.cesantias.get()
             if cesantias_seleccionado in ids_cesantias:
-                id_cesantias = ids_cesantias[cesantias_seleccionado]
+                self.id_cesantias = ids_cesantias[cesantias_seleccionado]
 
         self.cesantias.bind("<<ComboboxSelected>>", obtener_id_cesantias)
 
@@ -218,7 +222,7 @@ class Registrar_empleado:
         def obtener_id_pensiones(event):
             pensiones_seleccionado = self.pensiones.get()
             if pensiones_seleccionado in ids_pensiones:
-                id_pensiones = ids_pensiones[pensiones_seleccionado]
+                self.id_pensiones = ids_pensiones[pensiones_seleccionado]
 
         self.pensiones.bind("<<ComboboxSelected>>", obtener_id_pensiones)
 
@@ -291,10 +295,25 @@ class Registrar_empleado:
             'id_Ctabanco': self.cuenta.get(),
             'Fecha_Ingreso': self.fecha_ingreso.get()
         }
+        datos_cesantias = {
+            'ID_Cedula': self.cedula.get(),
+            'ID_fondo_C': self.id_cesantias
+        }
+        datos_eps = {
+            'ID_Cedula': self.cedula.get(),
+            'ID_EPS': self.ID_EPS
+        }
+        datos_pensiones = {
+            'Id_Cedula': self.cedula.get(),
+            'ID_pensiones': self.id_pensiones
+        }
         exito = insertar_CuentaB_empleado(datos_a_guardar)
         if exito:
             exito2 = insertar_empleado(datos_empleado)
             if exito2:
+                insertar_Cesantias_empleados(datos_cesantias)
+                insertar_EPS_empleados(datos_eps)
+                insertar_pensiones_empleados(datos_pensiones)
                 messagebox.showinfo("Registro Exitoso", "Empleado registrado correctamente en la base de datos")
                 self.cedula.delete(0, tk.END)
                 self.nombre.delete(0, tk.END)

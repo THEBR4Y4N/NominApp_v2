@@ -23,19 +23,27 @@ def Reporte_personal_basico():
     try:
         conn = estartableconnexion()
         cursor = conn.cursor()
-        query = '''
-            SELECT 
+        query = '''SELECT 
             Personal.Id_Cedula,Personal.Apellidos,Personal.Nombres,
-            FORMAT(Personal.Salario, 'C0', 'es-CO') AS "Salario neto",
-            Personal.id_Ctabanco as "Cuenta bancaria",
-            TipoCuenta.TIPO_CUENTA as "Tipo cuenta",
-            Bancos.Banco,
             Cargo.Nombre AS Cargo,
             Departamento.Nombre as Area,
             TipoCont.Nombre as "Tipo Contrato",
-            FORMAT(Personal.Fecha_Ingreso, 'dd/MM/yyyy') AS "Fecha Ingreso"
+            FORMAT(Personal.Salario, 'C0', 'es-CO') AS "Salario neto",
+            Bancos.Banco,
+            TipoCuenta.TIPO_CUENTA as "Tipo cuenta",
+            Personal.id_Ctabanco as "Cuenta bancaria",
+            EPS.Nombre_Eps AS EPS,
+            Fondo_Cesantias.Nombre_Fondo_C as "Fondo Cesantias",
+            Fondo_Pensiones.Nombre_Fondo as "Fondo Pensiones",
+            FORMAT(Personal.Fecha_Ingreso, 'dd-MM-yyyy') AS "Fecha Ingreso"
             FROM 
-                Personal
+            Personal
+            INNER JOIN 
+                Cargo ON Personal.id_cargo = Cargo.ID_cargo
+            Inner join 
+                Departamento on Departamento.Id_dpto = Personal.id_dpto
+            Inner join 
+                TipoCont on TipoCont.Id_TipoCont = Personal.id_TipoCont
             INNER JOIN 
                 Ctabanco ON Personal.id_Ctabanco = Ctabanco.id_Ctabanco
             INNER JOIN 
@@ -43,11 +51,17 @@ def Reporte_personal_basico():
             INNER JOIN 
                 TipoCuenta ON Ctabanco.ID_Tipo_cuenta = TipoCuenta.ID_TIPO_CUENTA
             INNER JOIN 
-                Cargo ON Personal.id_cargo = Cargo.ID_cargo
-            Inner join 
-                Departamento on Departamento.Id_dpto = Personal.id_dpto
-            Inner join 
-                TipoCont on TipoCont.Id_TipoCont = Personal.id_TipoCont '''
+                EPS_empleados ON EPS_empleados.ID_Cedula = Personal.Id_Cedula
+            INNER JOIN 
+                EPS ON EPS.ID_EPS = EPS_empleados.ID_EPS
+            INNER JOIN 
+                Cesantias_empleados ON Cesantias_empleados.ID_Cedula = Personal.Id_Cedula
+            INNER JOIN 
+                Fondo_Cesantias on Fondo_Cesantias.ID_fondo_C = Cesantias_empleados.ID_fondo_C
+            INNER JOIN 
+                Pensiones_empleado ON Pensiones_empleado.Id_Cedula = Personal.Id_Cedula
+            INNER JOIN
+                Fondo_Pensiones on Fondo_Pensiones.ID_fondo = Pensiones_empleado.ID_pensiones '''
 
         cursor.execute(query)
         rows = cursor.fetchall()
@@ -256,7 +270,8 @@ def insertar_empleado(datos_empleado):
         cursor = conn.cursor()
         query = """INSERT INTO Personal (Id_Cedula, Nombres, Apellidos, id_cargo, id_dpto, Salario, id_TipoCont, id_Ctabanco, Fecha_Ingreso) VALUES (%s, '%s', '%s', %s, %s, %s, %s, %s, '%s')"""
         valores = (
-            datos_empleado['Id_Cedula'], datos_empleado["Nombres"], datos_empleado["Apellidos"], datos_empleado['id_cargo'],
+            datos_empleado['Id_Cedula'], datos_empleado["Nombres"], datos_empleado["Apellidos"],
+            datos_empleado['id_cargo'],
             datos_empleado['id_dpto'], datos_empleado['Salario'], datos_empleado['id_TipoCont'],
             datos_empleado['id_Ctabanco'], datos_empleado['Fecha_Ingreso'])
         queryi = query % valores
@@ -266,3 +281,42 @@ def insertar_empleado(datos_empleado):
     except Exception as error:
         print("Error al insertar cuenta:", error)
     return exito2
+
+
+def insertar_Cesantias_empleados(datos_empleado):
+    try:
+        conn = estartableconnexion()
+        cursor = conn.cursor()
+        query = "INSERT INTO Cesantias_empleados (ID_Cedula,ID_fondo_C) values (%s, %s)"
+        valores = (datos_empleado['ID_Cedula'], datos_empleado['ID_fondo_C'])
+        queryi = query % valores
+        cursor.execute(queryi)
+        conn.commit()
+    except Exception as error:
+        print("Error al insertar información en la tabla Cesantias_empleados:", error)
+
+
+def insertar_EPS_empleados(datos_empleado):
+    try:
+        conn = estartableconnexion()
+        cursor = conn.cursor()
+        query = "INSERT INTO EPS_empleados (ID_Cedula,ID_EPS) values (%s, %s)"
+        valores = (datos_empleado['ID_Cedula'], datos_empleado['ID_EPS'])
+        queryi = query % valores
+        cursor.execute(queryi)
+        conn.commit()
+    except Exception as error:
+        print("Error al insertar información en la tabla EPS_empleados:", error)
+
+
+def insertar_pensiones_empleados(datos_empleado):
+    try:
+        conn = estartableconnexion()
+        cursor = conn.cursor()
+        query = "INSERT INTO Pensiones_empleado (Id_Cedula,ID_pensiones) values (%s, %s)"
+        valores = (datos_empleado['Id_Cedula'], datos_empleado['ID_pensiones'])
+        queryi = query % valores
+        cursor.execute(queryi)
+        conn.commit()
+    except Exception as error:
+        print("Error al insertar información en la tabla Pensiones_empleado:", error)
