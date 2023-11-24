@@ -1,5 +1,8 @@
 import tkinter as tk
 import csv
+import pdfkit
+from jinja2 import Template
+from fpdf import FPDF
 from tkinter import ttk
 from config import COLOR_CUERPO_PRINCIPAL, COLOR_BARRA_SUPERIOR
 from database import Reporte_personal_basico
@@ -40,15 +43,33 @@ class Form_Empleados:
         self.tabla.pack(fill=tk.BOTH, expand=True, pady=10)
 
         def exportar_pdf():
-            pdf = canvas.Canvas("ReporteEmplados.pdf", pagesize=letter)
-            y = 750
-            for dato in datos_desde_bd:
-                x = 50
-                for valor in dato:
-                    pdf.drawString(x, y, str(valor))
-                    x += 100
-                y -= 20
-            pdf.save()
+            rows, column_names = Reporte_personal_basico()
+            if not rows:
+                print("No se han obtenido datos para generar el PDF.")
+                return
+
+            pdf = FPDF(orientation='L', unit='in', format='legal')
+            pdf.add_page()
+
+            pdf.set_font("Arial", 'B', 16)
+            pdf.cell(8.3, 0.5, "Lista de empleados", 0, 1, 'C')
+            pdf.ln(0.2)
+            pdf.set_font("Arial", size=12)
+            col_width = 1.3  # Ajustar el ancho de las celdas
+            cell_height = 0.3  # Ajustar la altura de las celdas
+            spacing = 0.1
+
+            for column in column_names:
+                pdf.cell(col_width, cell_height + spacing, column, 1, 0, 'C')
+            pdf.ln()
+            # Imprimir datos
+            for row in rows:
+                for item in row:
+                    pdf.cell(col_width, cell_height + spacing, str(item), 1, 0, 'C')
+                pdf.ln()
+            pdf_output = "consulta_resultados.pdf"
+            pdf.output(pdf_output)
+            print(f"Se ha generado el archivo PDF '{pdf_output}' con los resultados de la consulta.")
 
         def exportar_csv():
             with open("ReporteEmplados.csv", mode="w", newline="") as file:
@@ -57,7 +78,9 @@ class Form_Empleados:
                 for dato in datos_desde_bd:
                     writer.writerow(dato)
 
-        self.boton_pdf = tk.Button(panel_principal, text="Exportar a PDF", command=exportar_pdf,
+        rows = Reporte_personal_basico()
+        self.boton_pdf = tk.Button(panel_principal, text="Exportar a PDF",
+                                   command=exportar_pdf,
                                    bg=COLOR_BARRA_SUPERIOR,
                                    fg="white", bd=0)
         self.boton_pdf.pack(side=tk.LEFT, padx=20, pady=10)

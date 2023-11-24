@@ -15,6 +15,6 @@ class FormInformacion(tk.Toplevel):
         util_ventana.centrar_ventana(self, w, h)
 
     def contruirWidget(self):
-        self.label_Version = tk.Label(self, text="Version : 1.0.1")
+        self.label_Version = tk.Label(self, text="Version : 1.0.2")
         self.label_Version.config(fg="#000000", font=("Roboto", 15), pady=10, width=20)
         self.label_Version.pack()
