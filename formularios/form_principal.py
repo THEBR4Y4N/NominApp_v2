@@ -15,6 +15,7 @@ from formularios.form_construccion import Formulario_construccion
 from formularios.form_dashboard import Form_Dashboard
 from formularios.Form_empleados import Form_Empleados
 from formularios.Form_Registro_empleado import Registrar_empleado
+from formularios.Form_nominas import nominas
 
 
 class FormPrincipal(tk.Tk):
@@ -76,16 +77,16 @@ class FormPrincipal(tk.Tk):
 
         self.buttonDashBoard = tk.Button(self.menu_lateral)
         self.buttonPersonal = tk.Button(self.menu_lateral)
-        self.buttonProfile = tk.Button(self.menu_lateral)
-        self.buttonPicture = tk.Button(self.menu_lateral)
+        self.buttonNomina = tk.Button(self.menu_lateral)
         self.buttonInfo = tk.Button(self.menu_lateral)
+        self.buttonProfile = tk.Button(self.menu_lateral)
         self.buttonSettings = tk.Button(self.menu_lateral)
 
         buttons_info = [
             ("Dashboard", "\uf109", self.buttonDashBoard, self.abrir_dashboard),
             ("Personal", "\uf03a", self.buttonPersonal, self.abrir_personal),
-            ("Profile", "\uf007", self.buttonProfile, self.abrir_panel_construccion),
-            ("Picture", "\uf03e", self.buttonPicture, self.abrir_panel_construccion),
+            ("Nominas", "\uf03a", self.buttonNomina, self.abrir_nominasP),
+            ("Perfil", "\uf007", self.buttonProfile, self.abrir_panel_construccion),
             ("Settings", "\uf013", self.buttonSettings, self.abrir_panel_construccion),
             ("Info", "\uf129", self.buttonInfo, self.abrir_panel_info)
         ]
@@ -155,6 +156,10 @@ class FormPrincipal(tk.Tk):
     def abrir_registro_empleados(self):
         self.limpiar_panel(self.cuerpo_principal)
         Registrar_empleado(self.cuerpo_principal)
+
+    def abrir_nominasP(self):
+        self.limpiar_panel(self.cuerpo_principal)
+        nominas(self.cuerpo_principal)
 
     def limpiar_panel(self, panel):
         for widget in panel.winfo_children():

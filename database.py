@@ -88,6 +88,36 @@ def Personal():
         return [], []
 
 
+def descuentos():
+    try:
+        conn = estartableconnexion()
+        cursor = conn.cursor()
+        query = "select * from Descuentos"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        rows = [list(map(str, row)) for row in rows]
+        column_names = [column[0] for column in cursor.description]
+        return rows, column_names
+    except Exception as e:
+        print("Error al obtener datos desde la base de datos:", e)
+    return [], []
+
+
+def devengados():
+    try:
+        conn = estartableconnexion()
+        cursor = conn.cursor()
+        query = "select * from Devengados"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        rows = [list(map(str, row)) for row in rows]
+        column_names = [column[0] for column in cursor.description]
+        return rows, column_names
+    except Exception as e:
+        print("Error al obtener datos desde la base de datos:", e)
+    return [], []
+
+
 def TipoCuenta(combo):
     try:
         conn = estartableconnexion()
@@ -315,6 +345,35 @@ def insertar_pensiones_empleados(datos_empleado):
         cursor = conn.cursor()
         query = "INSERT INTO Pensiones_empleado (Id_Cedula,ID_pensiones) values (%s, %s)"
         valores = (datos_empleado['Id_Cedula'], datos_empleado['ID_pensiones'])
+        queryi = query % valores
+        cursor.execute(queryi)
+        conn.commit()
+    except Exception as error:
+        print("Error al insertar información en la tabla Pensiones_empleado:", error)
+
+
+def insertar_descuentos(datos_descuentos):
+    try:
+        conn = estartableconnexion()
+        cursor = conn.cursor()
+        query = "INSERT INTO Descuentos(Eps_Salud,Pension,Fdo_Sol,Bancos,Fondo_de_Empleados,ID_Personal) values (%s,%s,%s,%s,%s,%s)"
+        valores = (datos_descuentos['Eps_Salud'], datos_descuentos['Pension'], datos_descuentos['Fdo_Sol'],
+                   datos_descuentos['Bancos'], datos_descuentos['Fondo_de_Empleados'], datos_descuentos['ID_Personal'])
+        queryi = query % valores
+        cursor.execute(queryi)
+        conn.commit()
+    except Exception as error:
+        print("Error al insertar información en la tabla Pensiones_empleado:", error)
+
+
+def insertar_devengados(datos_devengados):
+    try:
+        conn = estartableconnexion()
+        cursor = conn.cursor()
+        query = "INSERT INTO Devengados(Salario,Sub_Tpte,Gastos_Rep,Sobresueldo,Viaticos,Comisiones,Primas_Pago_extras,ID_empleado) values (%s,%s,%s,%s,%s,%s,%s,%s)"
+        valores = (datos_devengados['Salario'], datos_devengados['Sub_Tpte'], datos_devengados['Gastos_Rep'],
+                   datos_devengados['Sobresueldo'], datos_devengados['Viaticos'], datos_devengados['Comisiones'],
+                   datos_devengados['Primas_Pago_extras'], datos_devengados['ID_empleado'])
         queryi = query % valores
         cursor.execute(queryi)
         conn.commit()

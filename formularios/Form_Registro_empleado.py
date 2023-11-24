@@ -1,3 +1,4 @@
+import random
 import tkinter as tk
 from tkinter import ttk
 from tkinter import font
@@ -7,7 +8,7 @@ from datetime import date
 from tkinter import messagebox
 from database import (TipoCuenta, Bancos, Cargo, Departamento, TipoCont, EPS, Fondo_Cesantias, Fondo_Pensiones,
                       insertar_CuentaB_empleado, insertar_empleado, insertar_Cesantias_empleados,
-                      insertar_EPS_empleados,insertar_pensiones_empleados)
+                      insertar_EPS_empleados, insertar_pensiones_empleados, insertar_descuentos, insertar_devengados)
 
 
 class Registrar_empleado:
@@ -28,6 +29,15 @@ class Registrar_empleado:
         self.id_cesantias = None
         self.ID_EPS = None
         self.id_pensiones = None
+        self.valor_Salud = None
+        self.valor_Pension = None
+        self.valor_Fdo_Sol = None
+        self.valor_Bancos = None
+        self.valor_Fondo_de_Empleados = None
+        self.porcentaje_salud = 0.04
+        self.porcentaje_pension = 0.04
+        self.Sub_Tpte = 140606
+        self.subsitrans = None
 
         panel_principal1 = tk.Frame(panel_principal, height=50, bd=0, relief=tk.SOLID, bg=COLOR_CUERPO_PRINCIPAL)
         panel_principal1.pack()
@@ -314,6 +324,8 @@ class Registrar_empleado:
                 insertar_Cesantias_empleados(datos_cesantias)
                 insertar_EPS_empleados(datos_eps)
                 insertar_pensiones_empleados(datos_pensiones)
+                self.registrar_descuentos()
+                self.registrar_devengados()
                 messagebox.showinfo("Registro Exitoso", "Empleado registrado correctamente en la base de datos")
                 self.cedula.delete(0, tk.END)
                 self.nombre.delete(0, tk.END)
@@ -333,3 +345,56 @@ class Registrar_empleado:
                 messagebox.showerror("Error", "Hubo un problema al intentar registrar el empleado en la base de datos")
         else:
             messagebox.showwarning("Cuenta no registrada", "Cuenta bancaria no registrada, por favor valida")
+
+    def registrar_descuentos(self):
+        valorporcentaje = random.randint(0, 10)
+        porcentajeFondoE = valorporcentaje / 100
+
+        valorSalario = self.salario.get()
+        self.valor_Salud = float(valorSalario) * self.porcentaje_salud
+        self.valor_Pension = float(valorSalario) * self.porcentaje_pension
+
+        if int(valorSalario) < 2577400:
+            self.valor_Fdo_Sol = 0
+        elif int(valorSalario) > 2577400:
+            self.valor_Fdo_Sol = float(valorSalario) * 0.01
+        elif 17600000 < int(valorSalario) < 18700000:
+            self.valor_Fdo_Sol = float(valorSalario) * 0.012
+        elif 18700000 < int(valorSalario) < 19800000:
+            self.valor_Fdo_Sol = float(valorSalario) * 0.014
+        elif 19800000 < int(valorSalario) < 20900000:
+            self.valor_Fdo_Sol = float(valorSalario) * 0.016
+        elif 20900000 < int(valorSalario) < 22000000:
+            self.valor_Fdo_Sol = float(valorSalario) * 0.018
+        elif int(valorSalario) > 22000000:
+            self.valor_Fdo_Sol = float(valorSalario) * 0.02
+        self.valor_Bancos = 0
+        self.valor_Fondo_de_Empleados = float(valorSalario) * porcentajeFondoE
+
+        datos_descuentos = {
+            'Eps_Salud': self.valor_Salud,
+            'Pension': self.valor_Pension,
+            'Fdo_Sol': self.valor_Fdo_Sol,
+            'Bancos': self.valor_Bancos,
+            'Fondo_de_Empleados': self.valor_Fondo_de_Empleados,
+            'ID_Personal': self.cedula.get()
+        }
+        insertar_descuentos(datos_descuentos)
+
+    def registrar_devengados(self):
+        salario = self.salario.get()
+        if int(salario) < 2200000:
+            self.subsitrans = self.Sub_Tpte
+        else:
+            self.subsitrans = 0
+        datos_devengados = {
+            'Salario': self.salario.get(),
+            'Sub_Tpte': self.subsitrans,
+            'Gastos_Rep': 0,
+            'Sobresueldo': 0,
+            'Viaticos': 0,
+            'Comisiones': 0,
+            'Primas_Pago_extras': 0,
+            'ID_empleado': self.cedula.get()
+        }
+        insertar_devengados(datos_devengados)

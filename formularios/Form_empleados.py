@@ -1,13 +1,9 @@
 import tkinter as tk
 import csv
-import pdfkit
-from jinja2 import Template
 from fpdf import FPDF
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from config import COLOR_CUERPO_PRINCIPAL, COLOR_BARRA_SUPERIOR
 from database import Reporte_personal_basico
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 
 
 class Form_Empleados:
@@ -69,7 +65,7 @@ class Form_Empleados:
                 pdf.ln()
             pdf_output = "consulta_resultados.pdf"
             pdf.output(pdf_output)
-            print(f"Se ha generado el archivo PDF '{pdf_output}' con los resultados de la consulta.")
+            messagebox.showinfo("Reporte Generado Exitosamente", "Se ha generado el archivo PDF con los resultados de la consulta.")
 
         def exportar_csv():
             with open("ReporteEmplados.csv", mode="w", newline="") as file:
