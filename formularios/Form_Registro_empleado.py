@@ -1,11 +1,9 @@
 import random
 import tkinter as tk
-from tkinter import ttk
-from tkinter import font
+from tkinter import ttk, font, messagebox
 from config import COLOR_CUERPO_PRINCIPAL, COLOR_BARRA_SUPERIOR
 from tkcalendar import Calendar
 from datetime import date
-from tkinter import messagebox
 from database import (TipoCuenta, Bancos, Cargo, Departamento, TipoCont, EPS, Fondo_Cesantias, Fondo_Pensiones,
                       insertar_CuentaB_empleado, insertar_empleado, insertar_Cesantias_empleados,
                       insertar_EPS_empleados, insertar_pensiones_empleados, insertar_descuentos, insertar_devengados)
@@ -344,7 +342,7 @@ class Registrar_empleado:
             else:
                 messagebox.showerror("Error", "Hubo un problema al intentar registrar el empleado en la base de datos")
         else:
-            messagebox.showwarning("Cuenta no registrada", "Cuenta bancaria no registrada, por favor valida")
+            messagebox.showwarning("Cuenta no registrada", "Cuenta bancaria ya registrada para otro empleado, por favor valida la información")
 
     def registrar_descuentos(self):
         valorporcentaje = random.randint(0, 10)
@@ -398,3 +396,5 @@ class Registrar_empleado:
             'ID_empleado': self.cedula.get()
         }
         insertar_devengados(datos_devengados)
+
+

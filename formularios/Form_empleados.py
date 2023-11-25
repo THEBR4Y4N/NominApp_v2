@@ -33,6 +33,9 @@ class Form_Empleados:
         self.tabla.pack(fill=tk.BOTH, expand=True)
         scrollbar_x.pack(fill=tk.X)
 
+        for item in self.tabla.get_children():
+            self.tabla.delete(item)
+
         for dato in datos_desde_bd:
             self.tabla.insert('', 'end', values=dato)
 
@@ -41,7 +44,7 @@ class Form_Empleados:
         def exportar_pdf():
             rows, column_names = Reporte_personal_basico()
             if not rows:
-                print("No se han obtenido datos para generar el PDF.")
+                messagebox.showwarning("Error", "No se han obtenido datos para generar el PDF.")
                 return
 
             pdf = FPDF(orientation='L', unit='in', format='legal')
@@ -65,7 +68,8 @@ class Form_Empleados:
                 pdf.ln()
             pdf_output = "consulta_resultados.pdf"
             pdf.output(pdf_output)
-            messagebox.showinfo("Reporte Generado Exitosamente", "Se ha generado el archivo PDF con los resultados de la consulta.")
+            messagebox.showinfo("Reporte Generado Exitosamente",
+                                "Se ha generado el archivo PDF con los resultados de la consulta.")
 
         def exportar_csv():
             with open("ReporteEmplados.csv", mode="w", newline="") as file:
@@ -73,8 +77,9 @@ class Form_Empleados:
                 writer.writerow(column_names)  # Escribir encabezados
                 for dato in datos_desde_bd:
                     writer.writerow(dato)
+            messagebox.showinfo("Reporte Generado Exitosamente",
+                                "Se ha generado el archivo csv con los resultados de la consulta.")
 
-        rows = Reporte_personal_basico()
         self.boton_pdf = tk.Button(panel_principal, text="Exportar a PDF",
                                    command=exportar_pdf,
                                    bg=COLOR_BARRA_SUPERIOR,

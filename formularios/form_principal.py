@@ -35,11 +35,11 @@ class FormPrincipal(tk.Tk):
         self.controles_barra_superior()
         self.controles_menu_lateral()
         self.controles_cuerpo()
-        print()
 
     def config_window(self):
         self.title('NominApp')
         self.iconbitmap("./imagenes/icono.ico")
+        self.config(bg="#FFF")
         w, h = 1450, 768
         util_ventana.centrar_ventana(self, w, h)
 
@@ -85,7 +85,7 @@ class FormPrincipal(tk.Tk):
         buttons_info = [
             ("Dashboard", "\uf109", self.buttonDashBoard, self.abrir_dashboard),
             ("Personal", "\uf03a", self.buttonPersonal, self.abrir_personal),
-            ("Nominas", "\uf03a", self.buttonNomina, self.abrir_nominasP),
+            ("Nominas", "\uf145", self.buttonNomina, self.abrir_nominasP),
             ("Perfil", "\uf007", self.buttonProfile, self.abrir_panel_construccion),
             ("Settings", "\uf013", self.buttonSettings, self.abrir_panel_construccion),
             ("Info", "\uf129", self.buttonInfo, self.abrir_panel_info)

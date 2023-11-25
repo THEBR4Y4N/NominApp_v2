@@ -19,50 +19,11 @@ def estartableconnexion():
         return None
 
 
-def Reporte_personal_basico():
+def Personal():
     try:
         conn = estartableconnexion()
         cursor = conn.cursor()
-        query = '''SELECT 
-            Personal.Id_Cedula,Personal.Apellidos,Personal.Nombres,
-            Cargo.Nombre AS Cargo,
-            Departamento.Nombre as Area,
-            TipoCont.Nombre as "Tipo Contrato",
-            FORMAT(Personal.Salario, 'C0', 'es-CO') AS "Salario neto",
-            Bancos.Banco,
-            TipoCuenta.TIPO_CUENTA as "Tipo cuenta",
-            Personal.id_Ctabanco as "Cuenta bancaria",
-            EPS.Nombre_Eps AS EPS,
-            Fondo_Cesantias.Nombre_Fondo_C as "Fondo Cesantias",
-            Fondo_Pensiones.Nombre_Fondo as "Fondo Pensiones",
-            FORMAT(Personal.Fecha_Ingreso, 'dd-MM-yyyy') AS "Fecha Ingreso"
-            FROM 
-            Personal
-            INNER JOIN 
-                Cargo ON Personal.id_cargo = Cargo.ID_cargo
-            Inner join 
-                Departamento on Departamento.Id_dpto = Personal.id_dpto
-            Inner join 
-                TipoCont on TipoCont.Id_TipoCont = Personal.id_TipoCont
-            INNER JOIN 
-                Ctabanco ON Personal.id_Ctabanco = Ctabanco.id_Ctabanco
-            INNER JOIN 
-                Bancos ON Ctabanco.ID_Banco = Bancos.ID_banco
-            INNER JOIN 
-                TipoCuenta ON Ctabanco.ID_Tipo_cuenta = TipoCuenta.ID_TIPO_CUENTA
-            INNER JOIN 
-                EPS_empleados ON EPS_empleados.ID_Cedula = Personal.Id_Cedula
-            INNER JOIN 
-                EPS ON EPS.ID_EPS = EPS_empleados.ID_EPS
-            INNER JOIN 
-                Cesantias_empleados ON Cesantias_empleados.ID_Cedula = Personal.Id_Cedula
-            INNER JOIN 
-                Fondo_Cesantias on Fondo_Cesantias.ID_fondo_C = Cesantias_empleados.ID_fondo_C
-            INNER JOIN 
-                Pensiones_empleado ON Pensiones_empleado.Id_Cedula = Personal.Id_Cedula
-            INNER JOIN
-                Fondo_Pensiones on Fondo_Pensiones.ID_fondo = Pensiones_empleado.ID_pensiones '''
-
+        query = "select * from Personal"
         cursor.execute(query)
         rows = cursor.fetchall()
         rows = [list(map(str, row)) for row in rows]
@@ -73,11 +34,11 @@ def Reporte_personal_basico():
         return [], []
 
 
-def Personal():
+def personal_info():
     try:
         conn = estartableconnexion()
         cursor = conn.cursor()
-        query = "select * from Personal"
+        query = """select id_cedula AS "N° de documento", CONCAT(Nombres, ' ', Apellidos) as "Nombre Empleado" from Personal"""
         cursor.execute(query)
         rows = cursor.fetchall()
         rows = [list(map(str, row)) for row in rows]
@@ -379,3 +340,74 @@ def insertar_devengados(datos_devengados):
         conn.commit()
     except Exception as error:
         print("Error al insertar información en la tabla Pensiones_empleado:", error)
+
+
+def Reporte_personal_basico():
+    try:
+        conn = estartableconnexion()
+        cursor = conn.cursor()
+        query = '''SELECT 
+            Personal.Id_Cedula,Personal.Apellidos,Personal.Nombres,
+            Cargo.Nombre AS Cargo,
+            Departamento.Nombre as Area,
+            TipoCont.Nombre as "Tipo Contrato",
+            FORMAT(Personal.Salario, 'C0', 'es-CO') AS "Salario neto",
+            Bancos.Banco,
+            TipoCuenta.TIPO_CUENTA as "Tipo cuenta",
+            Personal.id_Ctabanco as "Cuenta bancaria",
+            EPS.Nombre_Eps AS EPS,
+            Fondo_Cesantias.Nombre_Fondo_C as "Fondo Cesantias",
+            Fondo_Pensiones.Nombre_Fondo as "Fondo Pensiones",
+            FORMAT(Personal.Fecha_Ingreso, 'dd-MM-yyyy') AS "Fecha Ingreso"
+            FROM 
+            Personal
+            INNER JOIN 
+                Cargo ON Personal.id_cargo = Cargo.ID_cargo
+            Inner join 
+                Departamento on Departamento.Id_dpto = Personal.id_dpto
+            Inner join 
+                TipoCont on TipoCont.Id_TipoCont = Personal.id_TipoCont
+            INNER JOIN 
+                Ctabanco ON Personal.id_Ctabanco = Ctabanco.id_Ctabanco
+            INNER JOIN 
+                Bancos ON Ctabanco.ID_Banco = Bancos.ID_banco
+            INNER JOIN 
+                TipoCuenta ON Ctabanco.ID_Tipo_cuenta = TipoCuenta.ID_TIPO_CUENTA
+            INNER JOIN 
+                EPS_empleados ON EPS_empleados.ID_Cedula = Personal.Id_Cedula
+            INNER JOIN 
+                EPS ON EPS.ID_EPS = EPS_empleados.ID_EPS
+            INNER JOIN 
+                Cesantias_empleados ON Cesantias_empleados.ID_Cedula = Personal.Id_Cedula
+            INNER JOIN 
+                Fondo_Cesantias on Fondo_Cesantias.ID_fondo_C = Cesantias_empleados.ID_fondo_C
+            INNER JOIN 
+                Pensiones_empleado ON Pensiones_empleado.Id_Cedula = Personal.Id_Cedula
+            INNER JOIN
+                Fondo_Pensiones on Fondo_Pensiones.ID_fondo = Pensiones_empleado.ID_pensiones '''
+
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        rows = [list(map(str, row)) for row in rows]
+        column_names = [column[0] for column in cursor.description]
+        return rows, column_names
+    except Exception as e:
+        print("Error al obtener datos desde la base de datos:", e)
+        return [], []
+
+
+def Desprendible(cedula_empleado):
+    try:
+        conn = estartableconnexion()
+        cursor = conn.cursor()
+        ced = cedula_empleado
+        query = '''SELECT "Identificación", "Nombre Empleado", Cargo, "Salario neto", "Subsidio de transporte", "Gastos_Rep", Sobresueldo, Viaticos, Comisiones,"extras", FORMAT("Total Ingresos", 'C0', 'es-CO')as "Total Ingresos" , "Fondo de salud", "Fondo de pension", "Descuento Fondo de empleados", "Descuento Fondo Solidario", "Descuento Bancario",FORMAT(Descuentos, 'C0', 'es-CO') as Descuentos, FORMAT(("Total Ingresos" - "Descuentos"), 'C0', 'es-CO') AS "Neto a pagar" FROM (SELECT Personal.Id_Cedula AS "Identificación", CONCAT(Personal.Nombres, ' ', Personal.Apellidos) as "Nombre Empleado", Cargo.Nombre AS Cargo, FORMAT(Personal.Salario, 'C0', 'es-CO') AS "Salario neto", FORMAT(Devengados.Sub_Tpte, 'C0', 'es-CO') AS "Subsidio de transporte", FORMAT(Devengados.Gastos_Rep, 'C0', 'es-CO') AS "Gastos_Rep", FORMAT(Devengados.Sobresueldo, 'C0', 'es-CO')as Sobresueldo , FORMAT(Devengados.Viaticos, 'C0', 'es-CO') as Viaticos, FORMAT(Devengados.Comisiones, 'C0', 'es-CO') as Comisiones, FORMAT(Devengados.Primas_Pago_extras, 'C0', 'es-CO') AS "extras", SUM(Devengados.Salario+Devengados.Sub_Tpte+Devengados.Gastos_Rep+Devengados.Sobresueldo+Devengados.Viaticos+Devengados.Comisiones+Devengados.Primas_Pago_extras) AS "Total Ingresos", FORMAT(Descuentos.Eps_Salud, 'C0', 'es-CO') AS "Fondo de salud", FORMAT(Descuentos.Pension, 'C0', 'es-CO') AS "Fondo de pension", FORMAT(Descuentos.Fondo_de_Empleados, 'C0', 'es-CO') AS "Descuento Fondo de empleados", FORMAT(Descuentos.Fdo_Sol, 'C0', 'es-CO') AS "Descuento Fondo Solidario", FORMAT(Descuentos.Bancos, 'C0', 'es-CO') AS "Descuento Bancario", SUM(Descuentos.Eps_Salud+Descuentos.Pension+Descuentos.Fondo_de_Empleados+Descuentos.Fdo_Sol+Descuentos.Bancos) AS "Descuentos" FROM Personal INNER JOIN Cargo ON Personal.id_cargo = Cargo.ID_cargo INNER JOIN Descuentos ON Descuentos.ID_Personal = Personal.Id_Cedula INNER JOIN Devengados ON Devengados.ID_empleado = Personal.Id_Cedula GROUP BY Personal.Id_Cedula, Personal.Apellidos, Personal.Nombres, Cargo.Nombre, Personal.Salario, Devengados.Sub_Tpte, Devengados.Gastos_Rep, Devengados.Sobresueldo, Devengados.Viaticos, Devengados.Comisiones, Devengados.Primas_Pago_extras, Descuentos.Eps_Salud, Descuentos.Pension, Descuentos.Fondo_de_Empleados, Descuentos.Fdo_Sol, Descuentos.Bancos) as Nominas WHERE "Identificación" = %s'''
+        queryi = query % ced
+        cursor.execute(queryi)
+        rows = cursor.fetchall()
+        rows = [list(map(str, row)) for row in rows]
+        column_names = [column[0] for column in cursor.description]
+        return rows, column_names
+    except Exception as e:
+        print("Error al obtener datos desde la base de datos:", e)
+    return [], []
