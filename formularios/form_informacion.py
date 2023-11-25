@@ -25,7 +25,7 @@ class FormInformacion(tk.Toplevel):
         self.titulo = self.titulo = tk.Label(self, text='NominApp')
         self.titulo.config(fg="#000000", font=("Roboto", 15), pady=10, width=20)
         self.titulo.pack()
-        self.label_Version = tk.Label(self, text="Version : 1.0.4")
+        self.label_Version = tk.Label(self, text="Version : 1.0.5")
         self.label_Version.config(fg="#000000", font=("Roboto", 15), pady=10, width=20)
         self.label_Version.pack()
         self.sub = self.titulo = tk.Label(self, text='Autores:')

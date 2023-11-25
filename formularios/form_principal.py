@@ -80,14 +80,12 @@ class FormPrincipal(tk.Tk):
         self.buttonNomina = tk.Button(self.menu_lateral)
         self.buttonInfo = tk.Button(self.menu_lateral)
         self.buttonProfile = tk.Button(self.menu_lateral)
-        self.buttonSettings = tk.Button(self.menu_lateral)
 
         buttons_info = [
-            ("Dashboard", "\uf109", self.buttonDashBoard, self.abrir_dashboard),
+            ("Dashboard", "\uf0e4", self.buttonDashBoard, self.abrir_dashboard),
             ("Personal", "\uf03a", self.buttonPersonal, self.abrir_personal),
-            ("Nominas", "\uf145", self.buttonNomina, self.abrir_nominasP),
+            ("Nominas", "\uf0d6", self.buttonNomina, self.abrir_nominasP),
             ("Perfil", "\uf007", self.buttonProfile, self.abrir_panel_construccion),
-            ("Settings", "\uf013", self.buttonSettings, self.abrir_panel_construccion),
             ("Info", "\uf129", self.buttonInfo, self.abrir_panel_info)
         ]
 

@@ -411,3 +411,35 @@ def Desprendible(cedula_empleado):
     except Exception as e:
         print("Error al obtener datos desde la base de datos:", e)
     return [], []
+
+
+def total_empleados():
+    try:
+        conn = estartableconnexion()
+        cursor = conn.cursor()
+        query = 'SELECT COUNT(*) AS "Total Empleados" FROM Personal'
+        cursor.execute(query)
+        resultado = cursor.fetchone()
+        total_empleados = resultado[0]
+        return total_empleados
+    except Exception as e:
+        print("Error al obtener datos desde la base de datos:", e)
+        return None
+
+
+def datos_salarios():
+    try:
+        nombres_empleados = []
+        salarios = []
+        conn = estartableconnexion()
+        cursor = conn.cursor()
+        query = '''select CONCAT(Personal.Nombres, ' ', Personal.Apellidos) as "Nombre Empleado",Personal.Salario from Personal'''
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        for fila in resultados:
+            nombres_empleados.append(fila[0])
+            salarios.append(int(fila[1]))
+        return nombres_empleados, salarios
+    except Exception as e:
+        print("Error al obtener datos desde la base de datos:", e)
+        return None
